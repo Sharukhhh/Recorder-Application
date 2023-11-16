@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import {Formik , Field , Form , ErrorMessage} from 'formik';
 import * as Yup from 'yup';
-import { toast } from 'react-toastify';
-import {Link} from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import {Link, useNavigate} from 'react-router-dom';
+import { register } from '../calls/authApi';
 
 const Signup = () => {
+  const navigate = useNavigate();
 
   return (
     <>
@@ -18,7 +20,6 @@ const Signup = () => {
 
         email : Yup.string()
         .email('Invalid Email Format')
-        .max(20, 'Must be 20 characters or less')
         .required('Required'),
 
         password : Yup.string()
@@ -31,11 +32,18 @@ const Signup = () => {
       })
     }
     onSubmit={
-      (values , {setSubmitting}) => {
-        setTimeout(() => {
-          toast(JSON.stringify(values , null , 2));
-          setSubmitting(false)
-        }, 400);
+      async(values , {setSubmitting}) => {
+        try {
+          const response = await register(values);
+          if(response){
+            toast.success(response.message);
+            navigate('/login');
+          }
+        } catch (error) {
+          toast.error(error.response.data.message);
+        } finally{
+          setSubmitting(false);
+        }
       }
     }
     >

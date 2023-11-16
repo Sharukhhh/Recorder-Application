@@ -1,9 +1,15 @@
 import React from 'react';
 import {Formik , Field , Form , ErrorMessage} from 'formik';
 import * as Yup from 'yup';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import { login } from '../calls/authApi';
+import {useDispatch} from 'react-redux';
+import { getUserData } from '../Redux/userSlice';
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   return (
     <>
       <Formik
@@ -12,7 +18,6 @@ const Login = () => {
             Yup.object({      
               email : Yup.string()
               .email('Invalid Email Format')
-              .max(20, 'Must be 20 characters or less')
               .required('Required'),
       
               password : Yup.string()
@@ -25,11 +30,19 @@ const Login = () => {
             })
           }
           onSubmit={
-            (values , {setSubmitting}) => {
-              setTimeout(() => {
-                toast(JSON.stringify(values , null , 2));
-                setSubmitting(false)
-              }, 400);
+            async (values , {setSubmitting}) => {
+              try {
+                const response = await login(values);
+                if(response){
+                  dispatch(getUserData(response.user))
+                  navigate('/home');
+                  toast.success(response.message);
+                }
+              } catch (error) {
+                toast.error(error.response.data.message);
+              } finally {
+                setSubmitting(false);
+              }
             }
           }
       >
