@@ -7,7 +7,7 @@ import bcrypt from 'bcrypt';
 export const signup = async (req, res) => {
     try { 
         console.log(req.body);
-        const { name , email , password} = req.body;
+        const { name , email , password , gender} = req.body;
 
         const existingUser = await User.findOne({email});
         if(existingUser){
@@ -15,8 +15,20 @@ export const signup = async (req, res) => {
         }
         const encryptPassword = await hashPassword(password);
 
+        let profileImage;
+
+        if(gender === 'Male'){
+            profileImage = 'https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png'
+        } else {
+            profileImage = 'https://w7.pngwing.com/pngs/129/292/png-transparent-female-avatar-girl-face-woman-user-flat-classy-users-icon.png'
+        }
+
         const newUser = new User({
-            name , email , password : encryptPassword 
+            name , 
+            email , 
+            password : encryptPassword  , 
+            gender,
+            image : profileImage
         });
 
         await newUser.save();

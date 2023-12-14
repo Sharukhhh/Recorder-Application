@@ -11,7 +11,7 @@ const Signup = () => {
   return (
     <>
     <Formik
-    initialValues={{name : '' , email : '' , password : ''}}
+    initialValues={{name : '' , email : '' , password : '' , gender: ''}}
     validationSchema={
       Yup.object({
         name : Yup.string()
@@ -20,6 +20,10 @@ const Signup = () => {
 
         email : Yup.string()
         .email('Invalid Email Format')
+        .required('Required'),
+
+        gender : Yup.string()
+        .oneOf(['male' , 'female'], 'Invalid Gender')
         .required('Required'),
 
         password : Yup.string()
@@ -59,6 +63,21 @@ const Signup = () => {
           className='w-full border p-2 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300'
         />
         <ErrorMessage name='email' className='text-red-500'/>
+
+        <label htmlFor="gender" className="block text-gray-700 text-sm font-bold mt-4 mb-2">
+          Gender
+        </label>
+        <Field
+          as="select"
+          name="gender"
+          className="w-full border p-2 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
+        >
+          <option value="" disabled>Select Gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </Field>
+        <ErrorMessage name="gender" className="text-red-500" />
+
 
         <label htmlFor="password" className='block text-gray-700 text-sm font-bold mt-4 mb-2'>Password</label>
         <Field type="password" placeholder='Enter Password' name='password' 
